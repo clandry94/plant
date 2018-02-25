@@ -118,8 +118,39 @@ func (b *Buffer) BufferEnd() cursor {
 	return cursor{}
 }
 
+/*
+	Returns the rune after the cursor. Error if end of buffer
+ */
+func (b *Buffer) GetRune() (rune, error) {
+	return 'a', nil
+}
+
+/*
+	returns the string of runes after a point.
+	Errors if the end of the buffer is reached, but still returns the partial string
+ */
+func (b *Buffer) GetString(count int) (string, error) {
+	return "", nil
+}
+
+/*
+	Returns the number of runes in the buffer (length of buffer)
+	TODO: keep track of number of characters because counting num
+	characters is O(n^2)
+ */
+func (b *Buffer) NumRunes() int {
+	return 0
+}
+
+/*
+	Returns number of lines in the buffer. Counts the last line
+ */
+func (b *Buffer) NumLines() int {
+	return 0
+}
+
 // the data of the buffer, represented as a rectangle
 type contents struct {
-	data [][]byte
+	data [][]rune
 }
 
