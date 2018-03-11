@@ -29,17 +29,18 @@ type Marks struct {
 }
 
 /*
-	Creates a new mark and places it at the front of the mark list
+	Creates a new mark and places it at the front of the mark list. Also returns
+	a pointer to the mark
 
  	TODO: keep the marks sorted in the order that they are in the buffer
  	TODO: check if mark with the same name exists in the list
 */
-func (m *Marks) Create(name string, location Cursor, fixed bool) error {
+func (m *Marks) Create(name string, location Cursor, fixed bool) (*Mark, error) {
 	if name == "" {
-		return errors.New("mark must have a name")
+		return nil, errors.New("mark must have a name")
 	}
 
-	mark := Mark{
+	mark := &Mark{
 		name:  name,
 		where: location,
 		fixed: fixed,
@@ -47,7 +48,7 @@ func (m *Marks) Create(name string, location Cursor, fixed bool) error {
 
 	m.Marks.PushFront(mark)
 
-	return nil
+	return mark, nil
 }
 
 /*

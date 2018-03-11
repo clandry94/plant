@@ -17,9 +17,9 @@ type Buffer struct {
 	Marks Marks
 
 	// holds the raw content of the buffer
-	contents contents
+	contents *contents
 
-  file *os.File
+	file *os.File
 
 	dirty bool
 
@@ -45,7 +45,7 @@ func (b *Buffer) GetName() string {
 	Sets Cursor in a buffer to the location provided
 */
 func (b *Buffer) SetCursor(loc Cursor) error {
-  b.Cursor = loc
+	b.Cursor = loc
 	return nil
 }
 

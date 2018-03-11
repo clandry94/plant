@@ -14,7 +14,7 @@ type Context struct {
 	buffers *list.List
 
 	// the current buffer in focus
-	currentBuffer bufferElement
+	currentBuffer *bufferElement
 }
 
 type bufferElement list.Element
@@ -40,12 +40,12 @@ func (e Context) Load(filename string) error {
 // create a new buffer with no file info
 func (e Context) BufferAdd(bufferName string) error {
 	buffer := &Buffer{
-			name: bufferName,
-			Cursor: NilCursor(),
-			contents: nil,
-			fileInfo: nil,
-			dirty: true,
-			modes: nil,
+		name:     bufferName,
+		Cursor:   NilCursor(),
+		contents: nil,
+		file:     nil,
+		dirty:    true,
+		modes:    nil,
 	}
 
 	e.buffers.PushFront(buffer)
@@ -56,30 +56,30 @@ func (e Context) BufferAdd(bufferName string) error {
 // clear a buffer's contents (doesn't write to disk)
 func (e Context) BufferClear(bufferName string) error {
 
-	if e.currentBuffer.Buffer().name == bufferName  {
+	if e.currentBuffer.Buffer().name == bufferName {
 		clearBuffer(e.currentBuffer.Value.(*Buffer))
 		return nil
 	}
 
-	buffer, err := e.findBuffer(bufferName)
+	bufferElement, err := e.findBufferElement(bufferName)
 	if err != nil {
 		return err
 	}
 
 	// clear the buffer
-	clearBuffer(buffer)
+	clearBuffer(bufferElement.Buffer())
 
 	return nil
 }
 
 func clearBuffer(buffer *Buffer) {
-	// clear the buffer
+	// TODO: clear the buffer
 }
 
 func (e Context) findBufferElement(bufferName string) (*bufferElement, error) {
 	for b := e.buffers.Front(); b != nil; b = b.Next() {
 		if b.Value.(*Buffer).name == bufferName {
-			return *bufferElement(b), nil
+			return (*bufferElement)(b), nil
 		}
 	}
 

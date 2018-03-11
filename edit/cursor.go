@@ -16,14 +16,49 @@ type location struct {
 	col  col
 }
 
-
-func NilCursor() Cursor{
+func NilCursor() Cursor {
 	return Cursor{
 		loc: location{
 			line: 0,
-			col: 0,
+			col:  0,
 		},
 	}
+}
+
+/*
+	Gets current line
+*/
+func (c Cursor) Line() int {
+	return int(c.loc.line)
+}
+
+/*
+	Gets current col
+*/
+func (c Cursor) Col() int {
+	return int(c.loc.col)
+}
+
+/*
+	Sets the current line of the cursor
+*/
+func (c *Cursor) SetLine(l int) error {
+	// TODO: do edge checks
+
+	c.loc.line = line(l)
+
+	return nil
+}
+
+/*
+	Sets the current col of the cursor
+*/
+func (c *Cursor) SetCol(column int) error {
+	// TODO: do edge checks
+
+	c.loc.col = col(column)
+
+	return nil
 }
 
 /*
@@ -40,16 +75,16 @@ func (c *Cursor) SetToMark(mark *Mark) error {
 func (c *Cursor) Swap(mark *Mark) {
 	// TODO: set to internal coordinates of the Cursor
 	// this probably won't work right due to pointer things
-	tmp := Cursor{}
-	c = &mark.where
-	mark.where = tmp
+	//tmp := Cursor{}
+	//c = &mark.where
+	//mark.where = tmp
 }
 
 /*
 	returns true if Cursor is at the mark
 */
-func (c Cursor) CursorAtMark(mark *Mark) bool {
-	if CompareCursor(c, mark.where) == AEqualB {
+func (c Cursor) AtMark(mark *Mark) bool {
+	if compareCursor(c, mark.where) == AEqualB {
 		return true
 	}
 
@@ -59,8 +94,8 @@ func (c Cursor) CursorAtMark(mark *Mark) bool {
 /*
 	returns true if Cursor is after the mark
 */
-func (c Cursor) CursorBeforeMark(mark *Mark) bool {
-	if CompareCursor(c, mark.where) == ABeforeB {
+func (c Cursor) BeforeMark(mark *Mark) bool {
+	if compareCursor(c, mark.where) == ABeforeB {
 		return true
 	}
 
@@ -71,8 +106,8 @@ func (c Cursor) CursorBeforeMark(mark *Mark) bool {
 	returns true if Cursor is before the mark
 	TODO: need Cursor coordinates to calculate this
 */
-func (c Cursor) CursorAfterMark(mark *Mark) bool {
-	if CompareCursor(c, mark.where) == AAfterB {
+func (c Cursor) AfterMark(mark *Mark) bool {
+	if compareCursor(c, mark.where) == AAfterB {
 		return true
 	}
 
@@ -89,7 +124,7 @@ const (
 	AAfterB  = 1
 )
 
-func CompareCursor(a Cursor, b Cursor) int {
+func compareCursor(a Cursor, b Cursor) int {
 	return compareLocation(a.loc, b.loc)
 }
 
