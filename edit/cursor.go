@@ -1,74 +1,125 @@
 package edit
 
-import (
-)
-
 // the representation of a location of a point
 // in the subeditor
-// TODO: implement cursor coordinate system
-type cursor struct {
-	// create location coordinate system
+// TODO: implement Cursor coordinate system
+type Cursor struct {
+	loc location
+}
+
+type line int
+
+type col int
+
+type location struct {
+	line line
+	col  col
 }
 
 /*
-	Sets the cursors location to the mark provided
- */
-func (c *cursor) SetToMark(mark *Mark) error {
+	Sets the Cursors location to the mark provided
+*/
+func (c *Cursor) SetToMark(mark *Mark) error {
+	c.loc = mark.where.loc
 	return nil
 }
 
 /*
-	Swaps the location of the cursor and the mark
- */
-func (c *cursor) Swap(mark *Mark) {
-	// TODO: set to internal coordinates of the cursor
+	Swaps the location of the Cursor and the mark
+*/
+func (c *Cursor) Swap(mark *Mark) {
+	// TODO: set to internal coordinates of the Cursor
 	// this probably won't work right due to pointer things
-	tmp := cursor{}
+	tmp := Cursor{}
 	c = &mark.where
 	mark.where = tmp
 }
 
 /*
-	returns true if cursor is at the mark
- */
-func (c cursor) PointAtMark(mark *Mark) bool {
-	return c == mark.where
-}
+	returns true if Cursor is at the mark
+*/
+func (c Cursor) CursorAtMark(mark *Mark) bool {
+	if CompareCursor(c, mark.where) == AEqualB {
+		return true
+	}
 
-/*
-	returns true if cursor is before the mark
-	TODO: need cursor coordinates to calculate this
- */
-func (c cursor) PointAfterMark(mark *Mark) bool {
 	return false
 }
 
+/*
+	returns true if Cursor is after the mark
+*/
+func (c Cursor) CursorBeforeMark(mark *Mark) bool {
+	if CompareCursor(c, mark.where) == ABeforeB {
+		return true
+	}
+
+	return false
+}
 
 /*
-	returns true if cursor is after the mark
- */
-func (c cursor) PointBeforeMark(mark *Mark) bool {
+	returns true if Cursor is before the mark
+	TODO: need Cursor coordinates to calculate this
+*/
+func (c Cursor) CursorAfterMark(mark *Mark) bool {
+	if CompareCursor(c, mark.where) == AAfterB {
+		return true
+	}
+
 	return false
 }
 
 /*
 	Some utility methods
- */
+*/
 
 const (
-	Loc1Before = -1
-	Loc1Equal = 0
-	Loc1After = 1
+	ABeforeB = -1
+	AEqualB  = 0
+	AAfterB  = 1
 )
 
-func CompareLocation(loc1 cursor, loc2 cursor) int {
-	// if loc1 before loc 2 return Loc1Before
-
-	// if loc1 same as loc2 return Loc1Equal
-
-	// if loc1 after loc2 return Loc1After
-
-	return Loc1Equal
+func CompareCursor(a Cursor, b Cursor) int {
+	return compareLocation(a.loc, b.loc)
 }
 
+func compareLocation(a location, b location) int {
+	if compareLine(a.line, b.line) == ABeforeB {
+		return ABeforeB
+	} else if compareLine(a.line, b.line) == AEqualB && compareCol(a.col, b.col) == ABeforeB {
+		return ABeforeB
+	}
 
+	if compareLine(a.line, b.line) == AAfterB {
+		return AAfterB
+	} else if compareLine(a.line, b.line) == AEqualB && compareCol(a.col, b.col) == AAfterB {
+		return AAfterB
+	}
+
+	// cursors must be equal
+	return AEqualB
+}
+
+func compareLine(a line, b line) int {
+	if a < b {
+		return ABeforeB
+	}
+
+	if a > b {
+		return AAfterB
+	}
+
+	return AEqualB
+}
+
+func compareCol(a col, b col) int {
+	if a < b {
+		return ABeforeB
+	}
+
+	if a > b {
+		return AAfterB
+	}
+
+	return AEqualB
+}

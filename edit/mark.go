@@ -8,7 +8,7 @@ import (
 // represents a mark made in the data
 type Mark struct {
 	name  string
-	where cursor
+	where Cursor
 
 	// fixed means the location is the character after the actual location
 	// instead of living before i.e. if looking at b then not fixed: a|bc
@@ -16,11 +16,11 @@ type Mark struct {
 	fixed bool
 }
 
-func (m *Mark) SetCursor(location cursor) {
+func (m *Mark) SetCursor(location Cursor) {
 	m.where = location
 }
 
-func (m *Mark) GetCursor() cursor {
+func (m *Mark) GetCursor() Cursor {
 	return m.where
 }
 
@@ -34,13 +34,13 @@ type Marks struct {
  	TODO: keep the marks sorted in the order that they are in the buffer
  	TODO: check if mark with the same name exists in the list
 */
-func (m *Marks) Create(name string, location cursor, fixed bool) error {
+func (m *Marks) Create(name string, location Cursor, fixed bool) error {
 	if name == "" {
 		return errors.New("mark must have a name")
 	}
 
 	mark := Mark{
-		name: name,
+		name:  name,
 		where: location,
 		fixed: fixed,
 	}
@@ -49,7 +49,6 @@ func (m *Marks) Create(name string, location cursor, fixed bool) error {
 
 	return nil
 }
-
 
 /*
 	Deletes a mark by its name
@@ -60,18 +59,10 @@ func (m *Marks) Delete(name string) error {
 	return nil
 }
 
-
 /*
-	Receives a cursor and sets that mark to the cursor's location
+	Receives a Cursor and sets that mark to the Cursor's location
 	TODO: traverse mark list to correct mark, then change its location
- */
-func (m *Marks) MarkToPoint(name string, location cursor) error {
+*/
+func (m *Marks) MarkToPoint(name string, location Cursor) error {
 	return nil
 }
-
-
-
-
-
-
-
