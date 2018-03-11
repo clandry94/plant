@@ -19,7 +19,7 @@ type Buffer struct {
 	// holds the raw content of the buffer
 	contents contents
 
-	fileInfo os.FileInfo
+  file *os.File
 
 	dirty bool
 
@@ -45,6 +45,7 @@ func (b *Buffer) GetName() string {
 	Sets Cursor in a buffer to the location provided
 */
 func (b *Buffer) SetCursor(loc Cursor) error {
+  b.Cursor = loc
 	return nil
 }
 
