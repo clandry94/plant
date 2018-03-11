@@ -1,7 +1,8 @@
 package edit
 
 import (
-	"container/ring"
+	"container/list"
+	"errors"
 )
 
 // the core of the sub editor. Only one context exists
@@ -10,10 +11,16 @@ import (
 type Context struct {
 	// a circular chain with pointers to buffers
 	// each buffer represents an open file (or new file?)
-	buffers *ring.Ring
+	buffers *list.List
 
 	// the current buffer in focus
-	currentBuffer *Buffer
+	currentBuffer bufferElement
+}
+
+type bufferElement list.Element
+
+func (e bufferElement) Buffer() *Buffer {
+	return e.Value.(*Buffer)
 }
 
 func NewContext() (Context, error) {
@@ -31,13 +38,52 @@ func (e Context) Load(filename string) error {
 }
 
 // create a new buffer with no file info
-func (e Context) BufferCreate(bufferName string) error {
+func (e Context) BufferAdd(bufferName string) error {
+	buffer := &Buffer{
+			name: bufferName,
+			Cursor: NilCursor(),
+			contents: nil,
+			fileInfo: nil,
+			dirty: true,
+			modes: nil,
+	}
+
+	e.buffers.PushFront(buffer)
+
 	return nil
 }
 
 // clear a buffer's contents (doesn't write to disk)
 func (e Context) BufferClear(bufferName string) error {
+
+	if e.currentBuffer.Buffer().name == bufferName  {
+		clearBuffer(e.currentBuffer.Value.(*Buffer))
+		return nil
+	}
+
+	buffer, err := e.findBuffer(bufferName)
+	if err != nil {
+		return err
+	}
+
+	// clear the buffer
+	clearBuffer(buffer)
+
 	return nil
+}
+
+func clearBuffer(buffer *Buffer) {
+	// clear the buffer
+}
+
+func (e Context) findBufferElement(bufferName string) (*bufferElement, error) {
+	for b := e.buffers.Front(); b != nil; b = b.Next() {
+		if b.Value.(*Buffer).name == bufferName {
+			return *bufferElement(b), nil
+		}
+	}
+
+	return nil, errors.New("buffer not found")
 }
 
 // delete a buffer from the context and lose all progress
@@ -47,6 +93,14 @@ func (e Context) BufferDelete(bufferName string) error {
 
 // set the current buffer to the buffer name
 func (e Context) BufferSet(bufferName string) error {
+	bufferElement, err := e.findBufferElement(bufferName)
+	if err != nil {
+		return err
+	}
+
+	// TODO: investigate if a race condition can happen here
+	e.currentBuffer = bufferElement
+
 	return nil
 }
 

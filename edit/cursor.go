@@ -16,6 +16,16 @@ type location struct {
 	col  col
 }
 
+
+func NilCursor() Cursor{
+	return Cursor{
+		loc: location{
+			line: 0,
+			col: 0,
+		},
+	}
+}
+
 /*
 	Sets the Cursors location to the mark provided
 */
