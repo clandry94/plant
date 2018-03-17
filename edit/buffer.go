@@ -3,8 +3,8 @@ package edit
 import (
 	"container/list"
 	"fmt"
-	"os"
 	"github.com/clandry94/plant/edit/raw"
+	"os"
 )
 
 // the core of file represented in the sub editor
@@ -26,6 +26,34 @@ type Buffer struct {
 
 	// individual modes appended to the buffer
 	modes *list.List
+}
+
+// Inserts a string at the current cursor location
+func (b *Buffer) Insert(str string) {
+	p := b.contents.Lines.Front()
+
+	i := 0
+	for p != nil {
+		if b.Cursor.Line() == i {
+			p.Value.(*raw.Piece).Insert(b.Cursor.Col(), []rune(str))
+		}
+		p = p.Next()
+		i++
+	}
+}
+
+// delete a n characters at the current cursor location
+func (b *Buffer) Delete(length int) {
+	p := b.contents.Lines.Front()
+
+	i := 0
+	for p != nil {
+		if b.Cursor.Line() == i {
+			p.Value.(*raw.Piece).Delete(b.Cursor.Col(), length)
+		}
+		p = p.Next()
+		i++
+	}
 }
 
 /*
@@ -152,6 +180,3 @@ func (b *Buffer) NumRunes() int {
 func (b *Buffer) NumLines() int {
 	return 0
 }
-
-
-

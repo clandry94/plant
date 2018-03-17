@@ -1,8 +1,8 @@
 package edit
 
-import(
-	"testing"
+import (
 	"github.com/clandry94/plant/edit/raw"
+	"testing"
 )
 
 func newBuffer(name string) *Buffer {
@@ -10,10 +10,35 @@ func newBuffer(name string) *Buffer {
 	return &Buffer{
 		name:     name,
 		Cursor:   NilCursor(),
-		contents: &raw.Contents{},
+		contents: raw.NewContents(),
 		file:     nil,
 		dirty:    false,
 		modes:    nil,
+	}
+}
+
+func TestBuffer_Insert(t *testing.T) {
+	buf := newBuffer("test")
+	buf.contents.Lines.PushFront(raw.NewPiece())
+	buf.Insert("Hello, world!")
+
+	results := string(buf.contents.Lines.Front().Value.(*raw.Piece).Data())
+
+	if results != "Hello, world!" {
+		t.Errorf("expected %v != actual %v", "Hello, World!", results)
+	}
+}
+
+func TestBuffer_Delete(t *testing.T) {
+	buf := newBuffer("test")
+	buf.contents.Lines.PushFront(raw.NewPiece())
+	buf.Insert("Hello, world!")
+	buf.Delete(7)
+
+	results := string(buf.contents.Lines.Front().Value.(*raw.Piece).Data())
+
+	if results != "world!" {
+		t.Errorf("expected %v != actual %v", "world!", results)
 	}
 }
 
