@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"fmt"
 	"os"
+	"github.com/clandry94/plant/edit/raw"
 )
 
 // the core of file represented in the sub editor
@@ -17,7 +18,7 @@ type Buffer struct {
 	Marks Marks
 
 	// holds the raw content of the buffer
-	contents *contents
+	contents *raw.Contents
 
 	file *os.File
 
@@ -29,15 +30,17 @@ type Buffer struct {
 
 /*
 	Sets the name of the buffer
+	TODO: handle name collisions
 */
 func (b *Buffer) SetName(name string) error {
+	b.name = name
 	return nil
 }
 
 /*
 	Returns the name of the buffer
 */
-func (b *Buffer) GetName() string {
+func (b *Buffer) Name() string {
 	return b.name
 }
 
@@ -65,14 +68,14 @@ func (b *Buffer) SetCursorToCount(i int) error {
 	Move buffer Cursor forward i characters
 */
 func (b *Buffer) CursorMoveForward(i int) error {
-	return nil
+	return b.Cursor.SetCol(b.Cursor.Col() + i)
 }
 
 /*
 	Move buffer Cursor backward i characters
 */
 func (b *Buffer) CursorMoveBack(i int) error {
-	return nil
+	return b.Cursor.SetCol(b.Cursor.Col() - i)
 }
 
 /*
@@ -150,7 +153,5 @@ func (b *Buffer) NumLines() int {
 	return 0
 }
 
-// the data of the buffer, represented as a rectangle
-type contents struct {
-	data [][]rune
-}
+
+

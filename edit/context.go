@@ -3,6 +3,7 @@ package edit
 import (
 	"container/list"
 	"errors"
+	"github.com/clandry94/plant/edit/raw"
 )
 
 // the core of the sub editor. Only one context exists
@@ -14,13 +15,7 @@ type Context struct {
 	buffers *list.List
 
 	// the current buffer in focus
-	currentBuffer *bufferElement
-}
-
-type bufferElement list.Element
-
-func (e bufferElement) Buffer() *Buffer {
-	return e.Value.(*Buffer)
+	currentBuffer *list.Element
 }
 
 func NewContext() (Context, error) {
@@ -37,12 +32,13 @@ func (e Context) Load(filename string) error {
 	return nil
 }
 
-// create a new buffer with no file info
-func (e Context) BufferAdd(bufferName string) error {
+// create a new buffer with no file info and push to the front
+// of the list
+func (e *Context) NewBuffer(bufferName string) error {
 	buffer := &Buffer{
 		name:     bufferName,
 		Cursor:   NilCursor(),
-		contents: nil,
+		contents: &raw.Contents{},
 		file:     nil,
 		dirty:    true,
 		modes:    nil,
@@ -56,7 +52,7 @@ func (e Context) BufferAdd(bufferName string) error {
 // clear a buffer's contents (doesn't write to disk)
 func (e Context) BufferClear(bufferName string) error {
 
-	if e.currentBuffer.Buffer().name == bufferName {
+	if e.currentBuffer.Value.(*Buffer).name == bufferName {
 		clearBuffer(e.currentBuffer.Value.(*Buffer))
 		return nil
 	}
@@ -67,7 +63,7 @@ func (e Context) BufferClear(bufferName string) error {
 	}
 
 	// clear the buffer
-	clearBuffer(bufferElement.Buffer())
+	clearBuffer(bufferElement.Value.(*Buffer))
 
 	return nil
 }
@@ -76,10 +72,10 @@ func clearBuffer(buffer *Buffer) {
 	// TODO: clear the buffer
 }
 
-func (e Context) findBufferElement(bufferName string) (*bufferElement, error) {
+func (e Context) findBufferElement(bufferName string) (*list.Element, error) {
 	for b := e.buffers.Front(); b != nil; b = b.Next() {
-		if b.Value.(*Buffer).name == bufferName {
-			return (*bufferElement)(b), nil
+		if b.Value.(*Buffer).Name() == bufferName {
+			return b, nil
 		}
 	}
 
@@ -105,11 +101,13 @@ func (e Context) BufferSet(bufferName string) error {
 }
 
 // switch to the next buffer and return the buffer name
-func (e Context) BufferSetNext() string {
-	return "the buffer name"
+func (e *Context) BufferSetNext() string {
+	e.currentBuffer = e.currentBuffer.Next()
+	return e.currentBuffer.Value.(*Buffer).Name()
 }
 
 // switch to the previous buffer in the ring
-func (e Context) BufferSetPrev() string {
-	return "the prev buffer"
+func (e *Context) BufferSetPrev() string {
+	e.currentBuffer = e.currentBuffer.Prev()
+	return e.currentBuffer.Value.(*Buffer).Name()
 }

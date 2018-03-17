@@ -7,14 +7,14 @@ import (
 	"github.com/clandry94/plant/edit"
 )
 
-func Test_CursorLine(t *testing.T) {
+func TestCursor_Line(t *testing.T) {
 	cursor := edit.NilCursor()
 	if cursor.Line() != 0 {
 		t.Errorf("expected %v got %v", 0, cursor.Line())
 	}
 }
 
-func Test_CursorSetLine(t *testing.T) {
+func TestCursor_SetLine(t *testing.T) {
 	cursor := edit.NilCursor()
 	cursor.SetLine(1)
 
@@ -23,14 +23,14 @@ func Test_CursorSetLine(t *testing.T) {
 	}
 }
 
-func Test_CursorCol(t *testing.T) {
+func TestCursor_Col(t *testing.T) {
 	cursor := edit.NilCursor()
 	if cursor.Col() != 0 {
 		t.Errorf("expected %v got %v", 0, cursor.Col())
 	}
 }
 
-func Test_CursorSetCol(t *testing.T) {
+func TestCursor_SetCol(t *testing.T) {
 	cursor := edit.NilCursor()
 
 	cursor.SetCol(1)
@@ -39,7 +39,7 @@ func Test_CursorSetCol(t *testing.T) {
 	}
 }
 
-func Test_CursorSetToMark(t *testing.T) {
+func TestCursor_SetToMark(t *testing.T) {
 	markList := edit.Marks{
 		Marks: list.New(),
 	}
@@ -66,11 +66,11 @@ func Test_CursorSetToMark(t *testing.T) {
 
 }
 
-func Test_CursorSwap(t *testing.T) {
+func TestCursor_Swap(t *testing.T) {
 	// TODO: needs implemented
 }
 
-func Test_CursorAtMark(t *testing.T) {
+func TestCursor_AtMark(t *testing.T) {
 	markList := edit.Marks{
 		Marks: list.New(),
 	}
@@ -98,7 +98,7 @@ func Test_CursorAtMark(t *testing.T) {
 	}
 }
 
-func Test_CursorBeforeMark(t *testing.T) {
+func TestCursor_BeforeMark(t *testing.T) {
 	markList := edit.Marks{
 		Marks: list.New(),
 	}
@@ -126,7 +126,7 @@ func Test_CursorBeforeMark(t *testing.T) {
 	}
 }
 
-func Test_CursorAfterMark(t *testing.T) {
+func TestCursor_AfterMark(t *testing.T) {
 	markList := edit.Marks{
 		Marks: list.New(),
 	}
