@@ -3,7 +3,8 @@ package display
 import (
 	"errors"
 	"github.com/gdamore/tcell"
-	"github.com/clandry94/plant/edit"
+	"github.com/clandry94/plant/pkg/edit"
+	"os"
 )
 
 type Window struct {
@@ -39,6 +40,7 @@ func (p *Pane) Bottom() *edit.Cursor{
 }
 
 func NewWindow() (*Window, error) {
+	/*
 	screen, err := tcell.NewScreen()
 	if err != nil {
 		return nil, err
@@ -57,13 +59,15 @@ func NewWindow() (*Window, error) {
 	screen.EnableMouse()
 	screen.Clear()
 
-
+	*/
 	return &Window{
-		screen: screen,
+		screen: nil,
 		style: tcell.StyleDefault,
 	}, nil
+
 }
 
+/*
 func (w *Window) Poll() error {
 	for {
 		event := w.screen.PollEvent()
@@ -82,6 +86,7 @@ func (w *Window) Poll() error {
 
 	return nil
 }
+*/
 
 /*
 	creates a new window depending on the config provided
@@ -115,7 +120,7 @@ func (w *Window) Save() error {
 /*
 	Loads a saved context
  */
-func (w *Window) Load() error {
+func (w *Window) Load(file *os.File) error {
 	return errors.New("not implemented")
 }
 
@@ -150,3 +155,22 @@ func (w *Window) CursorCol() int {
 	return 0
 }
 
+func (w *Window) SetCursor(){
+
+}
+
+func (w *Window) SetRow() {
+
+}
+
+func (w *Window) SetCol() {
+
+}
+
+func (w *Window) PutRune(r []rune) {
+
+}
+
+func (w *Window) PutString(s string) {
+
+}

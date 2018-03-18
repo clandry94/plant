@@ -3,7 +3,8 @@ package edit
 import (
 	"container/list"
 	"errors"
-	"github.com/clandry94/plant/edit/raw"
+	"github.com/clandry94/plant/pkg/edit/raw"
+	"os"
 )
 
 // the core of the sub editor. Only one context exists
@@ -16,10 +17,16 @@ type Context struct {
 
 	// the current buffer in focus
 	currentBuffer *list.Element
+
+	// redisplay
+	redisplay Redisplay
 }
 
-func NewContext() (Context, error) {
-	return Context{}, nil
+func NewContext(redisplay Redisplay) (Context, error) {
+	return Context{
+		buffers: list.New(),
+		redisplay: redisplay,
+	}, nil
 }
 
 // save context state/buffer states to a file
@@ -29,6 +36,13 @@ func (e Context) Save(filename string) error {
 
 // load a context state from a file
 func (e Context) Load(filename string) error {
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		return err
+	}
+
+	e.NewBuffer(file.Name())
+
 	return nil
 }
 
@@ -45,6 +59,7 @@ func (e *Context) NewBuffer(bufferName string) error {
 	}
 
 	e.buffers.PushFront(buffer)
+	e.currentBuffer = e.buffers.Front()
 
 	return nil
 }
