@@ -56,6 +56,7 @@ func (e *Context) NewBuffer(bufferName string) error {
 		file:     nil,
 		dirty:    true,
 		modes:    nil,
+		display:  e.redisplay,
 	}
 
 	e.buffers.PushFront(buffer)

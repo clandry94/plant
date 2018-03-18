@@ -167,10 +167,33 @@ func (w *Window) SetCol() {
 
 }
 
-func (w *Window) PutRune(r []rune) {
+func (w *Window) ClearLine() {
 
 }
 
-func (w *Window) PutString(s string) {
+func (w *Window) ClearScreen() {
 
 }
+
+
+func (w *Window) PutRune(r rune) {
+
+}
+
+func (w *Window) PutRunes(r []rune) {
+
+}
+
+func (w *Window) DeleteRunes(i int) {
+
+}
+
+func(w *Window) InsertLines(i int) {
+
+}
+
+func (w *Window) DeleteLines(i int) {
+
+}
+
+

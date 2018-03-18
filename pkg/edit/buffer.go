@@ -24,6 +24,8 @@ type Buffer struct {
 
 	dirty bool
 
+	display Redisplay
+
 	// individual modes appended to the buffer
 	modes *list.List
 }
@@ -40,6 +42,8 @@ func (b *Buffer) Insert(str string) {
 		p = p.Next()
 		i++
 	}
+
+	b.display.PutRunes([]rune(str))
 }
 
 // delete a n characters at the current cursor location
@@ -54,6 +58,8 @@ func (b *Buffer) Delete(length int) {
 		p = p.Next()
 		i++
 	}
+
+	b.display.DeleteRunes(length)
 }
 
 /*
@@ -96,7 +102,13 @@ func (b *Buffer) SetCursorToCount(i int) error {
 	Move buffer Cursor forward i characters
 */
 func (b *Buffer) CursorMoveForward(i int) error {
-	return b.Cursor.SetCol(b.Cursor.Col() + i)
+	err := b.Cursor.SetCol(b.Cursor.Col() + i)
+	if err != nil {
+		return err
+	}
+
+
+	return nil
 }
 
 /*
