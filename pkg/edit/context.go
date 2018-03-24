@@ -4,8 +4,11 @@ import (
 	"container/list"
 	"errors"
 	"github.com/clandry94/plant/pkg/edit/raw"
+	"github.com/sirupsen/logrus"
 	"os"
 )
+
+var log = logrus.New()
 
 // the core of the sub editor. Only one context exists
 // in the realm of a plant editor instance, but there could be
@@ -23,6 +26,18 @@ type Context struct {
 }
 
 func NewContext(redisplay Redisplay) (Context, error) {
+
+	file, err := os.OpenFile("editor.log", os.O_CREATE|os.O_WRONLY, 0777)
+	if err == nil {
+		log.Out = file
+	} else {
+		log.Info("failed to log to a file, using stderr")
+	}
+
+	log.WithFields(logrus.Fields{
+		"module" : "context",
+	}).Info("created context")
+
 	return Context{
 		buffers: list.New(),
 		redisplay: redisplay,
@@ -36,32 +51,84 @@ func (e Context) Save(filename string) error {
 
 // load a context state from a file
 func (e Context) Load(filename string) error {
-	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0755)
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0777)
 	if err != nil {
 		return err
 	}
 
-	e.NewBuffer(file.Name())
+	err = e.NewBuffer(Name(file.Name()), File(file))
+	if err != nil {
+		log.Panic("could not load buffer!")
+		return err
+	}
 
 	return nil
 }
 
+/*
+	Functional options for creating buffers
+ */
+type BufferOptions struct {
+	Name string
+	File *os.File
+}
+
+type BufferOption func(*BufferOptions)
+
+func Name(name string) BufferOption {
+	return func(args *BufferOptions) {
+		args.Name = name
+	}
+}
+
+func File(file *os.File) BufferOption {
+	return func(args *BufferOptions) {
+		args.File = file
+	}
+}
+
 // create a new buffer with no file info and push to the front
 // of the list
-func (e *Context) NewBuffer(bufferName string) error {
+func (e *Context) NewBuffer(args ...BufferOption) error {
+	options := &BufferOptions{
+		Name: "test", // will have issues if more than two with the default are made
+		File: nil,
+	}
+
+	for _, arg := range args {
+		arg(options)
+	}
+
+	logger := log.WithFields(logrus.Fields{
+		"filename" : options.File.Name(),
+		"bufname" : options.Name,
+	})
+
+	logger.Info("creating buffer")
+
 	buffer := &Buffer{
-		name:     bufferName,
+		name:     options.Name,
 		Cursor:   NilCursor(),
 		contents: &raw.Contents{},
-		file:     nil,
+		file:     options.File,
 		dirty:    true,
 		modes:    nil,
 		display:  e.redisplay,
 	}
 
+	contents, err := raw.NewContentsFromFile(buffer.file)
+	if err != nil {
+		logger.Errorf("unable to create buffer: %v", err)
+		return err
+	}
+
+	buffer.contents = contents
+
+
 	e.buffers.PushFront(buffer)
 	e.currentBuffer = e.buffers.Front()
 
+	buffer.display.Refresh(buffer.contents)
 	return nil
 }
 

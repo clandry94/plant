@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/clandry94/plant/display"
+	"github.com/clandry94/plant/pkg/display"
 )
 
 func main() {

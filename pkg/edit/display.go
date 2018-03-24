@@ -1,6 +1,9 @@
 package edit
 
-import "os"
+import (
+	"os"
+	"github.com/clandry94/plant/pkg/edit/raw"
+)
 
 /*
 	This describes the interface that must be implemented by a
@@ -25,8 +28,7 @@ type Redisplay interface{
 
 	// Performs a full window reload. This makes sure that the screen is correct
 	// no matter what.
-	Refresh()
-
+	Refresh(data *raw.Contents)
 
 	// Current row that the cursor is on in the window. This might be different from
 	// the cursor point in the editor due to linewrap

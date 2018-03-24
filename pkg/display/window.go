@@ -5,6 +5,7 @@ import (
 	"github.com/gdamore/tcell"
 	"github.com/clandry94/plant/pkg/edit"
 	"os"
+	"github.com/clandry94/plant/pkg/edit/raw"
 )
 
 type Window struct {
@@ -40,7 +41,7 @@ func (p *Pane) Bottom() *edit.Cursor{
 }
 
 func NewWindow() (*Window, error) {
-	/*
+
 	screen, err := tcell.NewScreen()
 	if err != nil {
 		return nil, err
@@ -52,16 +53,16 @@ func NewWindow() (*Window, error) {
 	}
 
 	defaultStyle := tcell.StyleDefault.
-						  Background(tcell.ColorWhite).
-						  Foreground(tcell.ColorBlack)
+						  Background(tcell.ColorBlack).
+						  Foreground(tcell.ColorWhite)
 
 	screen.SetStyle(defaultStyle)
-	screen.EnableMouse()
+	// screen.EnableMouse()
 	screen.Clear()
 
-	*/
+
 	return &Window{
-		screen: nil,
+		screen: screen,
 		style: tcell.StyleDefault,
 	}, nil
 
@@ -87,6 +88,10 @@ func (w *Window) Poll() error {
 	return nil
 }
 */
+
+func (w *Window) Sync() {
+	w.screen.Sync()
+}
 
 /*
 	creates a new window depending on the config provided
@@ -130,13 +135,33 @@ func (w *Window) Load(file *os.File) error {
 	represents the buffer.
  */
 func (w *Window) Redisplay() {
+	w.screen.Show()
 }
 
 /*
 	Performs a full window reload. This makes sure
 	that the screen is correct no matter what
  */
-func (w *Window) Refresh() {
+func (w *Window) Refresh(data *raw.Contents) {
+	screen := w.screen
+	p := data.Lines.Front()
+	i := 0
+
+	for p != nil {
+		line := p.Value.([]rune)
+		j := 0
+		for _, r := range line {
+			if j > 80 {
+				break
+			}
+			screen.SetContent(j, i, r, []rune{}, tcell.StyleDefault)
+			j++
+		}
+		p = p.Next()
+		i++
+	}
+
+	screen.Sync()
 }
 
 /*

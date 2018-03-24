@@ -30,6 +30,10 @@ type Buffer struct {
 	modes *list.List
 }
 
+func (b Buffer) GetContents() *raw.Contents {
+	return b.contents
+}
+
 // Inserts a string at the current cursor location
 func (b *Buffer) Insert(str string) {
 	p := b.contents.Lines.Front()

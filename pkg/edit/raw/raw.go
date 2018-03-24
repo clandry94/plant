@@ -2,6 +2,8 @@ package raw
 
 import (
 	"container/list"
+	"os"
+	"bufio"
 )
 
 const (
@@ -17,6 +19,28 @@ func NewContents() *Contents {
 	return &Contents{
 		Lines: list.New(),
 	}
+}
+
+func NewContentsFromFile(file *os.File) (*Contents, error) {
+	contents := &Contents {
+		Lines: list.New(),
+	}
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		runes := []rune(scanner.Text())
+		runes = append(runes, []rune("\n")...)
+
+		contents.Lines.PushBack(runes)
+	}
+
+	if scanner.Err() != nil {
+		return nil, scanner.Err()
+}
+
+	return contents, nil
+
 }
 
 type Piece struct {

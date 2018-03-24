@@ -22,18 +22,20 @@ func main() {
 	if err != nil {
 		panic("could not make window")
 	}
+
 	ctx, err := edit.NewContext(redisplay)
 	if err != nil {
-
 		panic("could not load any context")
 	}
+
+	ctx.Load(args[0])
 
 	if len(args) > 0 {
 		fmt.Println(args)
 		ctx.Load(args[0])
 
 		for {
-
+			redisplay.Redisplay()
 		}
 	}
 }
