@@ -11,10 +11,15 @@ import (
 type Window struct {
 	screen tcell.Screen
 	style  tcell.Style
+	cursor *cursor
 }
 
 type Pane struct {
 
+}
+
+type cursor struct {
+	x, y int
 }
 
 /*
@@ -64,6 +69,7 @@ func NewWindow() (*Window, error) {
 	return &Window{
 		screen: screen,
 		style: tcell.StyleDefault,
+		cursor: &cursor{0,0},
 	}, nil
 
 }
@@ -180,16 +186,17 @@ func (w *Window) CursorCol() int {
 	return 0
 }
 
-func (w *Window) SetCursor(){
-
+func (w *Window) SetCursor(x, y int){
+	w.cursor.x = x
+	w.cursor.y = y
 }
 
-func (w *Window) SetRow() {
-
+func (w *Window) SetRow(row int) {
+	w.cursor.y = row
 }
 
-func (w *Window) SetCol() {
-
+func (w *Window) SetCol(col int) {
+	w.cursor.x = col
 }
 
 func (w *Window) ClearLine() {
@@ -197,20 +204,46 @@ func (w *Window) ClearLine() {
 }
 
 func (w *Window) ClearScreen() {
-
+	w.screen.Clear()
 }
 
 
 func (w *Window) PutRune(r rune) {
-
+	w.screen.SetContent(w.cursor.x, w.cursor.y, r, []rune{}, tcell.StyleDefault)
+	w.screen.Show()
 }
 
-func (w *Window) PutRunes(r []rune) {
-
+func (w *Window) PutRunes(runes []rune) {
+	for _, rune := range runes {
+		if w.cursor.x > 80 {
+			w.cursor.x = 0
+			w.cursor.y++
+		}
+		w.screen.SetContent(w.cursor.x, w.cursor.y, rune, []rune{}, tcell.StyleDefault)
+	}
 }
 
 func (w *Window) DeleteRunes(i int) {
+	start := w.cursor.x
+	tempX := start
 
+	var temp [80]rune
+
+	// TODO: make this work with newlines properly
+	for tempX < 80 {
+		rune, _, _, _ := w.screen.GetContent(tempX, w.cursor.y, )
+		temp[tempX] = rune
+		tempX++
+	}
+
+	trailer := temp[start:tempX]
+
+	trailerCur := 0
+	for i > 0 {
+		w.screen.SetContent(w.cursor.x - i, w.cursor.y, trailer[trailerCur], []rune{}, tcell.StyleDefault)
+		i--
+		trailerCur++
+	}
 }
 
 func(w *Window) InsertLines(i int) {
