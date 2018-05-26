@@ -38,13 +38,13 @@ type Redisplay interface{
 	CursorCol() int
 
 	// Set the location of the cursor in the window
-	SetCursor()
+	SetCursor(int, int)
 
 	// Set the row of the cursor in the window
-	SetRow()
+	SetRow(int)
 
 	// Set the col of the cursor in the window
-	SetCol()
+	SetCol(int)
 
 	// SetAttr()
 	// Attr()

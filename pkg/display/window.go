@@ -14,6 +14,10 @@ type Window struct {
 	cursor *cursor
 }
 
+func (w *Window) Screen() tcell.Screen {
+	return w.screen
+}
+
 type Pane struct {
 
 }
@@ -176,14 +180,14 @@ func (w *Window) Refresh(data *raw.Contents) {
 	the cursor point in the editor due to line wrap
  */
 func (w *Window) CursorRow() int {
-	return 0
+	return w.cursor.y
 }
 
 /*
 	Same as CursorRow() but for col
  */
 func (w *Window) CursorCol() int {
-	return 0
+	return w.cursor.x
 }
 
 func (w *Window) SetCursor(x, y int){
@@ -214,12 +218,12 @@ func (w *Window) PutRune(r rune) {
 }
 
 func (w *Window) PutRunes(runes []rune) {
-	for _, rune := range runes {
+	for _, r := range runes {
 		if w.cursor.x > 80 {
 			w.cursor.x = 0
 			w.cursor.y++
 		}
-		w.screen.SetContent(w.cursor.x, w.cursor.y, rune, []rune{}, tcell.StyleDefault)
+		w.screen.SetContent(w.cursor.x, w.cursor.y, r, []rune{}, tcell.StyleDefault)
 	}
 }
 

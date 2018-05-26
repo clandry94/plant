@@ -11,8 +11,7 @@ import (
 var log = logrus.New()
 
 // the core of the sub editor. Only one context exists
-// in the realm of a plant editor instance, but there could be
-// more than one ecosystem in the future
+// in the realm of a plant editor instance
 type Context struct {
 	// a circular chain with pointers to buffers
 	// each buffer represents an open file (or new file?)
@@ -44,7 +43,7 @@ func NewContext(redisplay Redisplay) (Context, error) {
 	}, nil
 }
 
-// save context state/buffer states to a file
+// save context/buffer states to a file
 func (e Context) Save(filename string) error {
 	return nil
 }

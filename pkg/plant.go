@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/clandry94/plant/pkg/display"
 	"github.com/clandry94/plant/pkg/edit"
+	"github.com/clandry94/plant/pkg/cmd"
 )
 
 var versionFlag = flag.Bool("version", false, "Show version of the current build")
@@ -28,13 +29,16 @@ func main() {
 		panic("could not load any context")
 	}
 
-	ctx.Load(args[0])
 
 	if len(args) > 0 {
 		fmt.Println(args)
 		ctx.Load(args[0])
 
+		redisplay.Screen().ShowCursor(0,0)
 		for {
+			ev := redisplay.Screen().PollEvent()
+			cmd.Handle(ev, redisplay)
+
 			redisplay.Redisplay()
 		}
 	}
