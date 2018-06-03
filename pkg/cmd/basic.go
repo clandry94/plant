@@ -50,6 +50,7 @@ func Handle(ev tcell.Event, buffer *edit.Buffer) {
 		case tcell.KeyBackspace2:
 			logger.Info("backspace!")
 			// window.DeleteRunes(1)
+			buffer.Delete(1)
 		case tcell.KeyRune:
 			// logger.Infof("inserting rune at x: %v y: %v | %v",
 			//	window.CursorCol(), window.CursorRow(), string(ev.Rune()))

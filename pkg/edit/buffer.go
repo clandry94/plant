@@ -40,7 +40,9 @@ func (b *Buffer) Insert(str string) {
 	for p != nil {
 		if b.Cursor.Line() == i {
 			p.Value.(*raw.Piece).Insert(b.Cursor.Col(), []rune(str))
+			b.CursorMoveForward(len(str))
 		}
+
 		p = p.Next()
 		i++
 	}
@@ -54,6 +56,7 @@ func (b *Buffer) Delete(length int) {
 	for p != nil {
 		if b.Cursor.Line() == i {
 			p.Value.(*raw.Piece).Delete(b.Cursor.Col(), length)
+			b.CursorMoveBack(length)
 		}
 		p = p.Next()
 		i++

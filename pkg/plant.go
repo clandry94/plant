@@ -38,6 +38,7 @@ func main() {
 		for {
 			ev := window.Screen().PollEvent()
 			cmd.Handle(ev, ctx.CurrentBuffer())
+			window.SetCursor(ctx.CurrentBuffer().GetCursor().Col(), ctx.CurrentBuffer().GetCursor().Line())
 			window.Refresh(ctx.CurrentBuffer().GetContents())
 			//window.Redisplay()
 		}

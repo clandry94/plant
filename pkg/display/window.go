@@ -171,7 +171,7 @@ func (w *Window) Refresh(data *raw.Contents) {
 		i++
 	}
 
-	screen.Sync()
+	screen.Show()
 }
 
 /*

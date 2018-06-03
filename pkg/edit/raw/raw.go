@@ -28,6 +28,7 @@ func NewContentsFromFile(file *os.File) (*Contents, error) {
 
 	scanner := bufio.NewScanner(file)
 
+	// currently 1 piece per line
 	for scanner.Scan() {
 		runes := []rune(scanner.Text())
 		runes = append(runes, []rune("\n")...)
