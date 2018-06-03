@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/gdamore/tcell"
-	"github.com/clandry94/plant/pkg/display"
 	"os"
 	"github.com/sirupsen/logrus"
+	"github.com/clandry94/plant/pkg/edit"
 )
 
 var log = logrus.New()
@@ -22,7 +22,7 @@ func init() {
 	Holds the keybindings for basic cursor commands
  */
 
-func Handle(ev tcell.Event, window *display.Window) {
+func Handle(ev tcell.Event, buffer *edit.Buffer) {
 	logger := log.WithField("module", "cmd")
 
 	switch ev := ev.(type) {
@@ -33,31 +33,28 @@ func Handle(ev tcell.Event, window *display.Window) {
 			panic("exited!")
 		case tcell.KeyCtrlH: // move cursor left
 			logger.Info("moving cursor move left")
-			screen := window.Screen()
-			window.SetCursor(window.CursorCol()-1, window.CursorRow())
-			screen.ShowCursor(window.CursorCol(), window.CursorRow())
+			// window.SetCursor(window.CursorCol()-1, window.CursorRow())
+			buffer.CursorMoveBack(1)
 		case tcell.KeyCtrlL: // move cursor right
 			logger.Info("cursor move right")
-			screen := window.Screen()
-			window.SetCursor(window.CursorCol()+1, window.CursorRow())
-			screen.ShowCursor(window.CursorCol(), window.CursorRow())
+			// window.SetCursor(window.CursorCol()+1, window.CursorRow())
+			buffer.CursorMoveForward(1)
 		case tcell.KeyCtrlJ: // move cursor down
 			logger.Info("cursor move down")
-			screen := window.Screen()
-			window.SetCursor(window.CursorCol(), window.CursorRow()+1)
-			screen.ShowCursor(window.CursorCol(), window.CursorRow())
+			// window.SetCursor(window.CursorCol(), window.CursorRow()+1)
+			buffer.CursorMoveDown(1)
 		case tcell.KeyCtrlK: // move cursor up
 			logger.Info("cursor move up")
-			screen := window.Screen()
-			window.SetCursor(window.CursorCol(), window.CursorRow()-1)
-			screen.ShowCursor(window.CursorCol(), window.CursorRow())
+			// window.SetCursor(window.CursorCol(), window.CursorRow()-1)
+			buffer.CursorMoveUp(1)
+		case tcell.KeyBackspace2:
+			logger.Info("backspace!")
+			// window.DeleteRunes(1)
 		case tcell.KeyRune:
-			logger.Infof("inserting rune at x: %v y: %v | %v",
-				window.CursorCol(), window.CursorRow(), string(ev.Rune()))
-			screen := window.Screen()
-			screen.SetContent(window.CursorCol(), window.CursorRow(), ev.Rune(), []rune{}, tcell.StyleDefault)
-			window.SetCursor(window.CursorCol()+1, window.CursorRow())
-			screen.ShowCursor(window.CursorCol(), window.CursorRow())
+			// logger.Infof("inserting rune at x: %v y: %v | %v",
+			//	window.CursorCol(), window.CursorRow(), string(ev.Rune()))
+			// window.PutRune(ev.Rune())
+			buffer.Insert(string(ev.Rune()))
 		}
 	}
 }

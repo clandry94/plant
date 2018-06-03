@@ -193,6 +193,7 @@ func (w *Window) CursorCol() int {
 func (w *Window) SetCursor(x, y int){
 	w.cursor.x = x
 	w.cursor.y = y
+	w.screen.ShowCursor(w.CursorCol(), w.CursorRow())
 }
 
 func (w *Window) SetRow(row int) {
@@ -211,9 +212,9 @@ func (w *Window) ClearScreen() {
 	w.screen.Clear()
 }
 
-
 func (w *Window) PutRune(r rune) {
 	w.screen.SetContent(w.cursor.x, w.cursor.y, r, []rune{}, tcell.StyleDefault)
+	w.SetCursor(w.CursorCol()+1, w.CursorRow())
 	w.screen.Show()
 }
 
@@ -223,7 +224,7 @@ func (w *Window) PutRunes(runes []rune) {
 			w.cursor.x = 0
 			w.cursor.y++
 		}
-		w.screen.SetContent(w.cursor.x, w.cursor.y, r, []rune{}, tcell.StyleDefault)
+		w.PutRune(r)
 	}
 }
 

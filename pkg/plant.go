@@ -19,12 +19,12 @@ func main() {
 
 	args := flag.Args()
 
-	redisplay, err := display.NewWindow()
+	window, err := display.NewWindow()
 	if err != nil {
 		panic("could not make window")
 	}
 
-	ctx, err := edit.NewContext(redisplay)
+	ctx, err := edit.NewContext()
 	if err != nil {
 		panic("could not load any context")
 	}
@@ -34,12 +34,12 @@ func main() {
 		fmt.Println(args)
 		ctx.Load(args[0])
 
-		redisplay.Screen().ShowCursor(0,0)
+		window.Screen().ShowCursor(0,0)
 		for {
-			ev := redisplay.Screen().PollEvent()
-			cmd.Handle(ev, redisplay)
-
-			redisplay.Redisplay()
+			ev := window.Screen().PollEvent()
+			cmd.Handle(ev, ctx.CurrentBuffer())
+			window.Refresh(ctx.CurrentBuffer().GetContents())
+			//window.Redisplay()
 		}
 	}
 }

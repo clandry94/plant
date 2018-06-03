@@ -10,6 +10,10 @@ import (
 
 var log = logrus.New()
 
+func init() {
+	log.SetLevel(logrus.DebugLevel)
+}
+
 // the core of the sub editor. Only one context exists
 // in the realm of a plant editor instance
 type Context struct {
@@ -19,12 +23,9 @@ type Context struct {
 
 	// the current buffer in focus
 	currentBuffer *list.Element
-
-	// redisplay
-	redisplay Redisplay
 }
 
-func NewContext(redisplay Redisplay) (Context, error) {
+func NewContext() (Context, error) {
 
 	file, err := os.OpenFile("editor.log", os.O_CREATE|os.O_WRONLY, 0777)
 	if err == nil {
@@ -39,8 +40,13 @@ func NewContext(redisplay Redisplay) (Context, error) {
 
 	return Context{
 		buffers: list.New(),
-		redisplay: redisplay,
 	}, nil
+}
+
+func (e Context) CurrentBuffer() *Buffer {
+	log.Debug("retrieving current buffer, it is a:")
+	log.Debug(e.buffers.Front().Value.(*Buffer))
+	return e.buffers.Front().Value.(*Buffer)
 }
 
 // save context/buffer states to a file
@@ -112,7 +118,6 @@ func (e *Context) NewBuffer(args ...BufferOption) error {
 		file:     options.File,
 		dirty:    true,
 		modes:    nil,
-		display:  e.redisplay,
 	}
 
 	contents, err := raw.NewContentsFromFile(buffer.file)
@@ -123,11 +128,11 @@ func (e *Context) NewBuffer(args ...BufferOption) error {
 
 	buffer.contents = contents
 
-
+	logger.Debug("adding buffer to front of list")
 	e.buffers.PushFront(buffer)
+	logger.Debugf("new buffer list size %v", e.buffers.Len())
 	e.currentBuffer = e.buffers.Front()
 
-	buffer.display.Refresh(buffer.contents)
 	return nil
 }
 
