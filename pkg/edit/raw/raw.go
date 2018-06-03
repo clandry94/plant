@@ -31,8 +31,10 @@ func NewContentsFromFile(file *os.File) (*Contents, error) {
 	for scanner.Scan() {
 		runes := []rune(scanner.Text())
 		runes = append(runes, []rune("\n")...)
+		piece := NewPiece()
+		piece.Insert(0, runes)
 
-		contents.Lines.PushBack(runes)
+		contents.Lines.PushBack(piece)
 	}
 
 	if scanner.Err() != nil {

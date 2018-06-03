@@ -158,7 +158,7 @@ func (w *Window) Refresh(data *raw.Contents) {
 	i := 0
 
 	for p != nil {
-		line := p.Value.([]rune)
+		line := p.Value.(*raw.Piece).Data()
 		j := 0
 		for _, r := range line {
 			if j > 80 {
