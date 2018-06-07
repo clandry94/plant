@@ -6,9 +6,13 @@ import (
 	"github.com/clandry94/plant/pkg/edit"
 	"os"
 	"github.com/clandry94/plant/pkg/edit/raw"
+	"github.com/clandry94/plant/pkg/edit/status"
+	"github.com/gdamore/tcell/views"
 )
 
 type Window struct {
+	panel  *views.Panel
+	app	   *views.Application
 	screen tcell.Screen
 	style  tcell.Style
 	cursor *cursor
@@ -50,7 +54,6 @@ func (p *Pane) Bottom() *edit.Cursor{
 }
 
 func NewWindow() (*Window, error) {
-
 	screen, err := tcell.NewScreen()
 	if err != nil {
 		return nil, err
@@ -69,35 +72,24 @@ func NewWindow() (*Window, error) {
 	// screen.EnableMouse()
 	screen.Clear()
 
+	app := &views.Application{}
+
+	panel := views.NewPanel()
+	panel.SetContent(views.NewTextArea())
+	panel.SetStatus(views.NewSimpleStyledText())
+
+	app.SetRootWidget(panel)
+	app.SetScreen(screen)
 
 	return &Window{
+		app: app,
+		panel: panel,
 		screen: screen,
 		style: tcell.StyleDefault,
 		cursor: &cursor{0,0},
 	}, nil
 
 }
-
-/*
-func (w *Window) Poll() error {
-	for {
-		event := w.screen.PollEvent()
-		switch event := event.(type) {
-		case *tcell.EventKey:
-			switch event.Key() {
-			case tcell.KeyEscape, tcell.KeyEnter:
-				panic("temporary")
-			case tcell.KeyCtrlL:
-				w.screen.Sync()
-			}
-		case *tcell.EventResize:
-			w.screen.Sync()
-		}
-	}
-
-	return nil
-}
-*/
 
 func (w *Window) Sync() {
 	w.screen.Sync()
@@ -146,6 +138,13 @@ func (w *Window) Load(file *os.File) error {
  */
 func (w *Window) Redisplay() {
 	w.screen.Show()
+}
+
+/*
+	Performs a refresh of the status line
+ */
+func (w *Window) RefreshStatusLine(status status.Status) {
+
 }
 
 /*

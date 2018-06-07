@@ -29,7 +29,6 @@ func main() {
 		panic("could not load any context")
 	}
 
-
 	if len(args) > 0 {
 		fmt.Println(args)
 		ctx.Load(args[0])
@@ -40,6 +39,7 @@ func main() {
 			cmd.Handle(ev, ctx.CurrentBuffer())
 			window.SetCursor(ctx.CurrentBuffer().GetCursor().Col(), ctx.CurrentBuffer().GetCursor().Line())
 			window.Refresh(ctx.CurrentBuffer().GetContents())
+			window.RefreshStatusLine(ctx.CurrentBuffer().Status())
 			//window.Redisplay()
 		}
 	}

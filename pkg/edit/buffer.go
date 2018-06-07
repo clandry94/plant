@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/clandry94/plant/pkg/edit/raw"
 	"os"
+	"github.com/clandry94/plant/pkg/edit/status"
 )
 
 // the core of file represented in the sub editor
@@ -26,6 +27,15 @@ type Buffer struct {
 
 	// individual modes appended to the buffer
 	modes *list.List
+}
+
+func (b Buffer) Status() status.Status {
+	return status.Status{
+		Lines: b.NumLines(),
+		CurrentLine: b.Cursor.Line(),
+		Cols: b.NumCols(),
+		CurrentCol: b.Cursor.Col(),
+	}
 }
 
 func (b Buffer) GetContents() *raw.Contents {
@@ -277,5 +287,12 @@ func (b *Buffer) NumRunes() int {
 	Returns number of lines in the buffer. Counts the last line
 */
 func (b *Buffer) NumLines() int {
-	return 0
+	return 1337
+}
+
+/*
+	Returns number of columns in the current line. Does not count newlie
+ */
+func (b *Buffer) NumCols() int {
+	return 1337
 }

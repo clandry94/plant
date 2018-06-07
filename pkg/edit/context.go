@@ -21,6 +21,7 @@ type Context struct {
 	// each buffer represents an open file (or new file?)
 	buffers *list.List
 
+
 	// the current buffer in focus
 	currentBuffer *list.Element
 }

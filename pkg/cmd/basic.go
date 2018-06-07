@@ -30,7 +30,7 @@ func Handle(ev tcell.Event, buffer *edit.Buffer) {
 		switch ev.Key() {
 		case tcell.KeyEscape:
 			// need to implement closing
-			panic("exited!")
+
 		case tcell.KeyCtrlH: // move cursor left
 			logger.Info("moving cursor move left")
 			// window.SetCursor(window.CursorCol()-1, window.CursorRow())
