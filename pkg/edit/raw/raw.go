@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"os"
 	"bufio"
+	"fmt"
 )
 
 const (
@@ -46,6 +47,15 @@ func NewContentsFromFile(file *os.File) (*Contents, error) {
 
 }
 
+type IndexOutOfRangeError struct {
+	PieceLength int
+	IndexPos    int
+}
+
+func (e IndexOutOfRangeError) Error() string {
+	return fmt.Sprintf("index out of range. length: %v, indexPos: %v", e.PieceLength, e.IndexPos)
+}
+
 type Piece struct {
 	length int
 	used   int
@@ -63,8 +73,17 @@ func NewPiece() *Piece{
 }
 
 // delete length characters from start
-func (p *Piece) Delete(start int, length int) {
+func (p *Piece) Delete(start int, length int) error {
+	if (start + length) > len(p.data) {
+		return IndexOutOfRangeError{
+			PieceLength: len(p.data),
+			IndexPos: start + length,
+		}
+	}
+
 	p.data = append(p.data[:start], p.data[start+length:]...)
+
+	return nil
 }
 
 func (p *Piece) Insert(start int, runes []rune) {
@@ -73,4 +92,8 @@ func (p *Piece) Insert(start int, runes []rune) {
 
 func (p *Piece) Data() []rune {
 	return p.data
+}
+
+func (p Piece) Len() int {
+	return len(p.Data())
 }

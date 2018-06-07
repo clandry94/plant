@@ -55,7 +55,11 @@ func (b *Buffer) Delete(length int) {
 	i := 0
 	for p != nil {
 		if b.Cursor.Line() == i {
-			p.Value.(*raw.Piece).Delete(b.Cursor.Col(), length)
+			err := p.Value.(*raw.Piece).Delete(b.Cursor.Col(), length)
+			if err != nil {
+				log.Warn(err)
+			}
+
 			b.CursorMoveBack(length)
 		}
 		p = p.Next()
@@ -100,7 +104,8 @@ func (b *Buffer) SetCursorToCount(i int) error {
 }
 
 /*
-	Move buffer cursor up i rows
+	Move buffer cursor up i rows and to the end of the line
+	if current post is outside of the length of the above line
  */
 func (b *Buffer) CursorMoveUp(i int) error {
 	err := b.Cursor.SetLine(b.Cursor.Line() - i)
@@ -108,11 +113,15 @@ func (b *Buffer) CursorMoveUp(i int) error {
 		return err
 	}
 
+	b.reelCursor()
+
+
 	return nil
 }
 
 /*
-	Move buffer cursor down i rows
+	move buffer cursor down i rows and to the end of the line
+	if current pos is outside of the length of the below line
  */
 func (b *Buffer) CursorMoveDown(i int) error {
 	err := b.Cursor.SetLine(b.Cursor.Line() + i)
@@ -120,7 +129,56 @@ func (b *Buffer) CursorMoveDown(i int) error {
 		return err
 	}
 
+	b.reelCursor()
+
 	return nil
+}
+
+func (b *Buffer) SetCursorEndOfLine() {
+	// for some reason there are 2 extra character at the end of each line.
+	// This is probably the newline
+	b.Cursor.SetCol(b.endOfLineCol() - 2)
+}
+
+// reeling the cursor means to bring it back to the end of the current line
+// after a line change
+func (b *Buffer) reelCursor() {
+	curLine := b.currentLine()
+	if b.Cursor.Col() > curLine.Value.(*raw.Piece).Len() - 2 {
+		b.SetCursorEndOfLine()
+	}
+}
+
+// is a *raw.Piece in the value. Returning element
+// so we have access to the prev and next
+func (b *Buffer) currentLine() *list.Element {
+	p := b.contents.Lines.Front()
+
+	i := 0
+	for p != nil {
+		if b.Cursor.Line() == i {
+			return p
+		}
+		p = p.Next()
+		i++
+	}
+
+	return nil
+}
+
+func (b Buffer) endOfLineCol() int {
+	p := b.contents.Lines.Front()
+
+	i := 0
+	for p != nil {
+		if b.Cursor.Line() == i {
+			return len(p.Value.(*raw.Piece).Data())
+		}
+		p = p.Next()
+		i++
+	}
+
+	return 0
 }
 
 /*

@@ -47,6 +47,9 @@ func Handle(ev tcell.Event, buffer *edit.Buffer) {
 			logger.Info("cursor move up")
 			// window.SetCursor(window.CursorCol(), window.CursorRow()-1)
 			buffer.CursorMoveUp(1)
+		case tcell.KeyCtrlE: // set cursor end of line
+			logger.Info("sending cursor to end of line!")
+			buffer.SetCursorEndOfLine()
 		case tcell.KeyBackspace2:
 			logger.Info("backspace!")
 			// window.DeleteRunes(1)
