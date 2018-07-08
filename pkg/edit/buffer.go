@@ -147,6 +147,7 @@ func (b *Buffer) CursorMoveDown(i int) error {
 func (b *Buffer) SetCursorEndOfLine() {
 	// for some reason there are 2 extra character at the end of each line.
 	// This is probably the newline
+	// update: this is from the \n
 	b.Cursor.SetCol(b.endOfLineCol() - 2)
 }
 
@@ -154,6 +155,14 @@ func (b *Buffer) SetCursorEndOfLine() {
 // after a line change
 func (b *Buffer) reelCursor() {
 	curLine := b.currentLine()
+
+	// Handles empty lines
+	// TODO: make this nicer
+	if curLine.Value.(*raw.Piece).Len() == 1 {
+		b.Cursor.SetCol(b.endOfLineCol() - 1)
+		return
+	}
+
 	if b.Cursor.Col() > curLine.Value.(*raw.Piece).Len() - 2 {
 		b.SetCursorEndOfLine()
 	}
