@@ -1,11 +1,11 @@
-package cmd
+package plant
 
 import (
 	"github.com/gdamore/tcell"
 	"os"
 	"os/user"
 	"github.com/sirupsen/logrus"
-	"github.com/clandry94/plant/pkg/edit"
+	"github.com/clandry94/plant/edit"
 	"fmt"
 	"github.com/BurntSushi/toml"
 )

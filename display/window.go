@@ -3,10 +3,10 @@ package display
 import (
 	"errors"
 	"github.com/gdamore/tcell"
-	"github.com/clandry94/plant/pkg/edit"
+	"github.com/clandry94/plant/edit"
 	"os"
-	"github.com/clandry94/plant/pkg/edit/raw"
-	"github.com/clandry94/plant/pkg/edit/status"
+	"github.com/clandry94/plant/edit/raw"
+	"github.com/clandry94/plant/edit/status"
 	"github.com/gdamore/tcell/views"
 )
 

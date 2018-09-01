@@ -3,7 +3,7 @@ package edit
 import (
 	"container/list"
 	"errors"
-	"github.com/clandry94/plant/pkg/edit/raw"
+	"github.com/clandry94/plant/edit/raw"
 	"github.com/sirupsen/logrus"
 	"os"
 )

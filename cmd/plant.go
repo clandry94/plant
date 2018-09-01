@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/clandry94/plant/pkg/cmd"
-	"github.com/clandry94/plant/pkg/display"
-	"github.com/clandry94/plant/pkg/edit"
+	"github.com/clandry94/plant"
+	"github.com/clandry94/plant/display"
+	"github.com/clandry94/plant/edit"
 )
 
 var versionFlag = flag.Bool("version", false, "Show version of the current build")
@@ -34,9 +34,10 @@ func main() {
 		ctx.Load(args[0])
 
 		window.Screen().ShowCursor(0, 0)
+
 		for {
 			ev := window.Screen().PollEvent()
-			cmd.Handle(ev, ctx.CurrentBuffer())
+			plant.Handle(ev, ctx.CurrentBuffer())
 			window.SetCursor(ctx.CurrentBuffer().GetCursor().Col(), ctx.CurrentBuffer().GetCursor().Line())
 			window.Refresh(ctx.CurrentBuffer().GetContents())
 			window.RefreshStatusLine(ctx.CurrentBuffer().Status())

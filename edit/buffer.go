@@ -3,9 +3,9 @@ package edit
 import (
 	"container/list"
 	"fmt"
-	"github.com/clandry94/plant/pkg/edit/raw"
+	"github.com/clandry94/plant/edit/raw"
 	"os"
-	"github.com/clandry94/plant/pkg/edit/status"
+	"github.com/clandry94/plant/edit/status"
 )
 
 // the core of file represented in the sub editor
