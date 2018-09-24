@@ -6,6 +6,7 @@ import (
 	"github.com/clandry94/plant"
 	"github.com/clandry94/plant/display"
 	"github.com/clandry94/plant/edit"
+	"os"
 )
 
 var versionFlag = flag.Bool("version", false, "Show version of the current build")
@@ -37,7 +38,14 @@ func main() {
 
 		for {
 			ev := window.Screen().PollEvent()
-			plant.Handle(ev, ctx.CurrentBuffer())
+			err := plant.Handle(ev, ctx.CurrentBuffer())
+			if err != nil {
+				if err.Error() == "exit" {
+					window.Screen().Fini()
+					os.Exit(0)
+				}
+			}
+
 			window.SetCursor(ctx.CurrentBuffer().GetCursor().Col(), ctx.CurrentBuffer().GetCursor().Line())
 			window.Refresh(ctx.CurrentBuffer().GetContents())
 			window.RefreshStatusLine(ctx.CurrentBuffer().Status())

@@ -4,37 +4,15 @@ import (
 	"container/list"
 	"fmt"
 	"github.com/clandry94/plant/edit/raw"
-	"os"
 	"github.com/clandry94/plant/edit/status"
 )
 
-// the core of file represented in the sub editor
-type Buffer struct {
-	name string
-
-	// current location of the Cursor
-	Cursor Cursor
-
-	// maintains a set of marks
-	Marks Marks
-
-	// holds the raw content of the buffer
-	contents *raw.Contents
-
-	file *os.File
-
-	dirty bool
-
-	// individual modes appended to the buffer
-	modes *list.List
-}
-
 func (b Buffer) Status() status.Status {
 	return status.Status{
-		Lines: b.NumLines(),
+		Lines:       b.NumLines(),
 		CurrentLine: b.Cursor.Line(),
-		Cols: b.NumCols(),
-		CurrentCol: b.Cursor.Col(),
+		Cols:        b.NumCols(),
+		CurrentCol:  b.Cursor.Col(),
 	}
 }
 
@@ -49,7 +27,11 @@ func (b *Buffer) Insert(str string) {
 	i := 0
 	for p != nil {
 		if b.Cursor.Line() == i {
-			p.Value.(*raw.Piece).Insert(b.Cursor.Col(), []rune(str))
+			err := p.Value.(*raw.Piece).Insert(b.Cursor.Col(), []rune(str))
+			if err != nil {
+				log.WithField("module", "buffer").Error(err.Error())
+			}
+
 			b.CursorMoveForward(len(str))
 		}
 
@@ -116,7 +98,7 @@ func (b *Buffer) SetCursorToCount(i int) error {
 /*
 	Move buffer cursor up i rows and to the end of the line
 	if current post is outside of the length of the above line
- */
+*/
 func (b *Buffer) CursorMoveUp(i int) error {
 	err := b.Cursor.SetLine(b.Cursor.Line() - i)
 	if err != nil {
@@ -125,14 +107,13 @@ func (b *Buffer) CursorMoveUp(i int) error {
 
 	b.reelCursor()
 
-
 	return nil
 }
 
 /*
 	move buffer cursor down i rows and to the end of the line
 	if current pos is outside of the length of the below line
- */
+*/
 func (b *Buffer) CursorMoveDown(i int) error {
 	err := b.Cursor.SetLine(b.Cursor.Line() + i)
 	if err != nil {
@@ -163,7 +144,7 @@ func (b *Buffer) reelCursor() {
 		return
 	}
 
-	if b.Cursor.Col() > curLine.Value.(*raw.Piece).Len() - 2 {
+	if b.Cursor.Col() > curLine.Value.(*raw.Piece).Len()-2 {
 		b.SetCursorEndOfLine()
 	}
 }
@@ -301,7 +282,7 @@ func (b *Buffer) NumLines() int {
 
 /*
 	Returns number of columns in the current line. Does not count newlie
- */
+*/
 func (b *Buffer) NumCols() int {
 	return 1337
 }

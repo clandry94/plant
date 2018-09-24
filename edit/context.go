@@ -14,18 +14,6 @@ func init() {
 	log.SetLevel(logrus.DebugLevel)
 }
 
-// the core of the sub editor. Only one context exists
-// in the realm of a plant editor instance
-type Context struct {
-	// a circular chain with pointers to buffers
-	// each buffer represents an open file (or new file?)
-	buffers *list.List
-
-
-	// the current buffer in focus
-	currentBuffer *list.Element
-}
-
 func NewContext() (Context, error) {
 
 	file, err := os.OpenFile("editor.log", os.O_CREATE|os.O_WRONLY, 0777)
@@ -36,7 +24,7 @@ func NewContext() (Context, error) {
 	}
 
 	log.WithFields(logrus.Fields{
-		"module" : "context",
+		"module": "context",
 	}).Info("created context")
 
 	return Context{
@@ -73,7 +61,7 @@ func (e Context) Load(filename string) error {
 
 /*
 	Functional options for creating buffers
- */
+*/
 type BufferOptions struct {
 	Name string
 	File *os.File
@@ -106,8 +94,8 @@ func (e *Context) NewBuffer(args ...BufferOption) error {
 	}
 
 	logger := log.WithFields(logrus.Fields{
-		"filename" : options.File.Name(),
-		"bufname" : options.Name,
+		"filename": options.File.Name(),
+		"bufname":  options.Name,
 	})
 
 	logger.Info("creating buffer")

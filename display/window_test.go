@@ -1,6 +1,6 @@
 package display_test
 
-import(
+import (
 	"github.com/clandry94/plant/display"
 	"testing"
 )

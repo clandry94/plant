@@ -1,19 +1,12 @@
 package edit
 
-// the representation of a location of a point
-// in the subeditor
-// TODO: implement Cursor coordinate system
-type Cursor struct {
-	loc location
-}
-
-type line int
-
-type col int
+import (
+	editErrors "github.com/clandry94/plant/edit/errors"
+)
 
 type location struct {
-	line line
-	col  col
+	line int
+	col  int
 }
 
 func NilCursor() Cursor {
@@ -42,10 +35,12 @@ func (c Cursor) Col() int {
 /*
 	Sets the current line of the cursor
 */
-func (c *Cursor) SetLine(l int) error {
-	// TODO: do edge checks
+func (c *Cursor) SetLine(line int) error {
+	if line < 0 {
+		return editErrors.IndexOutOfRangeError{1, line}
+	}
 
-	c.loc.line = line(l)
+	c.loc.line = line
 
 	return nil
 }
@@ -54,9 +49,11 @@ func (c *Cursor) SetLine(l int) error {
 	Sets the current col of the cursor
 */
 func (c *Cursor) SetCol(column int) error {
-	// TODO: do edge checks
+	if column < 0 {
+		return editErrors.IndexOutOfRangeError{1, column}
+	}
 
-	c.loc.col = col(column)
+	c.loc.col = column
 
 	return nil
 }
@@ -145,7 +142,7 @@ func compareLocation(a location, b location) int {
 	return AEqualB
 }
 
-func compareLine(a line, b line) int {
+func compareLine(a int, b int) int {
 	if a < b {
 		return ABeforeB
 	}
@@ -157,7 +154,7 @@ func compareLine(a line, b line) int {
 	return AEqualB
 }
 
-func compareCol(a col, b col) int {
+func compareCol(a int, b int) int {
 	if a < b {
 		return ABeforeB
 	}

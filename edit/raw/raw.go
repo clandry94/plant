@@ -1,10 +1,10 @@
 package raw
 
 import (
-	"container/list"
-	"os"
 	"bufio"
-	"fmt"
+	"container/list"
+	editErrors "github.com/clandry94/plant/edit/errors"
+	"os"
 )
 
 const (
@@ -23,7 +23,7 @@ func NewContents() *Contents {
 }
 
 func NewContentsFromFile(file *os.File) (*Contents, error) {
-	contents := &Contents {
+	contents := &Contents{
 		Lines: list.New(),
 	}
 
@@ -41,19 +41,10 @@ func NewContentsFromFile(file *os.File) (*Contents, error) {
 
 	if scanner.Err() != nil {
 		return nil, scanner.Err()
-}
+	}
 
 	return contents, nil
 
-}
-
-type IndexOutOfRangeError struct {
-	PieceLength int
-	IndexPos    int
-}
-
-func (e IndexOutOfRangeError) Error() string {
-	return fmt.Sprintf("index out of range. length: %v, indexPos: %v", e.PieceLength, e.IndexPos)
 }
 
 type Piece struct {
@@ -64,20 +55,20 @@ type Piece struct {
 	// version
 }
 
-func NewPiece() *Piece{
+func NewPiece() *Piece {
 	return &Piece{
 		length: 0,
-		used: 0,
-		data: make([]rune, 0),
+		used:   0,
+		data:   make([]rune, 0),
 	}
 }
 
 // delete length characters from start
 func (p *Piece) Delete(start int, length int) error {
 	if (start + length) > len(p.data) {
-		return IndexOutOfRangeError{
+		return editErrors.IndexOutOfRangeError{
 			PieceLength: len(p.data),
-			IndexPos: start + length,
+			IndexPos:    start + length,
 		}
 	}
 
@@ -86,8 +77,13 @@ func (p *Piece) Delete(start int, length int) error {
 	return nil
 }
 
-func (p *Piece) Insert(start int, runes []rune) {
+func (p *Piece) Insert(start int, runes []rune) error {
+	if start < 0 {
+		return editErrors.IndexOutOfRangeError{len(runes), start}
+	}
 	p.data = append(p.data[:start], append(runes, p.data[start:]...)...)
+
+	return nil
 }
 
 func (p *Piece) Data() []rune {

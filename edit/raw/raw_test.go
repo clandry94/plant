@@ -66,7 +66,6 @@ func Benchmark_PieceInsertSameString100(b *testing.B) {
 	}
 }
 
-
 func Test_PieceDelete(t *testing.T) {
 	// expected : start, length
 	tests := []deleteTest{

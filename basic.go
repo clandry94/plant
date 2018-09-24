@@ -1,13 +1,14 @@
 package plant
 
 import (
-	"github.com/gdamore/tcell"
-	"os"
-	"os/user"
-	"github.com/sirupsen/logrus"
-	"github.com/clandry94/plant/edit"
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"github.com/clandry94/plant/edit"
+	"github.com/clandry94/plant/errors"
+	"github.com/gdamore/tcell"
+	"github.com/sirupsen/logrus"
+	"os"
+	"os/user"
 )
 
 var log = logrus.New()
@@ -25,21 +26,18 @@ func init() {
 	overrideKeys()
 }
 
-
-
 type Config struct {
-	CBackward string
-	CForward string
-	CUp string
-	CDown string
+	CBackward  string
+	CForward   string
+	CUp        string
+	CDown      string
 	CJumpToEnd string
-	CDelete string
+	CDelete    string
 }
 
 func overrideKeys() {
 
 }
-
 
 func initConfig() {
 	usr, err := user.Current()
@@ -57,9 +55,8 @@ func initConfig() {
 
 /*
 	Holds the keybindings for basic cursor commands
- */
-
-func Handle(ev tcell.Event, buffer *edit.Buffer) {
+*/
+func Handle(ev tcell.Event, buffer *edit.Buffer) error {
 	logger := log.WithField("module", "cmd")
 
 	switch ev := ev.(type) {
@@ -67,6 +64,7 @@ func Handle(ev tcell.Event, buffer *edit.Buffer) {
 		switch ev.Key() {
 		case tcell.KeyEscape:
 			// need to implement closing
+			return errors.Exit()
 
 		case tcell.KeyCtrlH: // move cursor left
 			logger.Info("moving cursor move left")
@@ -102,7 +100,8 @@ func Handle(ev tcell.Event, buffer *edit.Buffer) {
 			//	window.CursorCol(), window.CursorRow(), string(ev.Rune()))
 			// window.PutRune(ev.Rune())
 			buffer.Insert(string(ev.Rune()))
-
 		}
 	}
+
+	return nil
 }

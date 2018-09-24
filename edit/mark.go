@@ -5,17 +5,6 @@ import (
 	"errors"
 )
 
-// represents a mark made in the data
-type Mark struct {
-	name  string
-	where Cursor
-
-	// fixed means the location is the character after the actual location
-	// instead of living before i.e. if looking at b then not fixed: a|bc
-	// fixed: ab|c
-	fixed bool
-}
-
 func (m *Mark) SetCursor(location Cursor) {
 	m.where = location
 }
