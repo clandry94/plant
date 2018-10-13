@@ -61,41 +61,41 @@ func Handle(ev tcell.Event, buffer *edit.Buffer) error {
 
 	switch ev := ev.(type) {
 	case *tcell.EventKey:
-		switch ev.Key() {
-		case tcell.KeyEscape:
+		switch Keys[ev.Key()] {
+		case Exit:
 			// need to implement closing
 			return errors.Exit()
 
-		case tcell.KeyCtrlH: // move cursor left
+		case CursorLeft: // move cursor left
 			logger.Info("moving cursor move left")
 			// window.SetCursor(window.CursorCol()-1, window.CursorRow())
 			buffer.CursorMoveBack(1)
 
-		case tcell.KeyCtrlL: // move cursor right
+		case CursorRight: // move cursor right
 			logger.Info("cursor move right")
 			// window.SetCursor(window.CursorCol()+1, window.CursorRow())
 			buffer.CursorMoveForward(1)
 
-		case tcell.KeyCtrlJ: // move cursor down
+		case CursorDown: // move cursor down
 			logger.Info("cursor move down")
 			// window.SetCursor(window.CursorCol(), window.CursorRow()+1)
 			buffer.CursorMoveDown(1)
 
-		case tcell.KeyCtrlK: // move cursor up
+		case CursorUp: // move cursor up
 			logger.Info("cursor move up")
 			// window.SetCursor(window.CursorCol(), window.CursorRow()-1)
 			buffer.CursorMoveUp(1)
 
-		case tcell.KeyCtrlE: // set cursor end of line
+		case JumpCursorEnd: // set cursor end of line
 			logger.Info("sending cursor to end of line!")
 			buffer.SetCursorEndOfLine()
 
-		case tcell.KeyBackspace2:
+		case Backspace:
 			logger.Info("backspace!")
 			// window.DeleteRunes(1)
 			buffer.Delete(1)
 
-		case tcell.KeyRune:
+		default:
 			// logger.Infof("inserting rune at x: %v y: %v | %v",
 			//	window.CursorCol(), window.CursorRow(), string(ev.Rune()))
 			// window.PutRune(ev.Rune())
